@@ -35,12 +35,12 @@ angular.module('ez.spinner', [])
   }];
 })
 
-.service('ezSpinnerInterceptor', ['$q', '$timeout', 'ezSpinnerConfig', 'ezSpinnerService', function($q, $timeout, ezSpinnerConfig, ezSpinnerService) {
+.service('ezSpinnerInterceptor', ['$q', '$interval', 'ezSpinnerConfig', 'ezSpinnerService', function($q, $interval, ezSpinnerConfig, ezSpinnerService) {
   var t;
 
   var cancelTimeout = function() {
     if (t) {
-      $timeout.cancel(t);
+      $interval.cancel(t);
     }
   };
 
@@ -55,15 +55,15 @@ angular.module('ez.spinner', [])
       if (pathNotIgnored(config.url)) {
         ezSpinnerService.numLoadings += 1;
 
-        t = $timeout(function() {
+        t = $interval(function() {
           if (ezSpinnerService.numLoadings > 0) {
             ezSpinnerService.show();
           }
 
-          t = $timeout(function() { // prevent spinner from hanging
+          t = $interval(function() { // prevent spinner from hanging
             ezSpinnerService.hide();
-          }, ezSpinnerConfig.maxWait);
-        }, ezSpinnerConfig.initWait);
+          }, ezSpinnerConfig.maxWait, 1);
+        }, ezSpinnerConfig.initWait, 1);
       }
 
       return config || $q.when(config);

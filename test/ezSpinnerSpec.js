@@ -1,15 +1,15 @@
 describe('ezSpinnerSpec', function() {
 
-  var el, $scope, $httpBackend, $timeout, ezSpinnerService, ezSpinnerInterceptor, ezSpinnerConfig;
+  var el, $scope, $httpBackend, $interval, ezSpinnerService, ezSpinnerInterceptor, ezSpinnerConfig;
 
   beforeEach(function() {
     module('ez.spinner');
   });
 
-  beforeEach(inject(function($compile, $rootScope, _$httpBackend_, _$timeout_, _ezSpinnerService_, _ezSpinnerInterceptor_, _ezSpinnerConfig_) {
+  beforeEach(inject(function($compile, $rootScope, _$httpBackend_, _$interval_, _ezSpinnerService_, _ezSpinnerInterceptor_, _ezSpinnerConfig_) {
     $scope = $rootScope.$new();
     $httpBackend = _$httpBackend_;
-    $timeout = _$timeout_;
+    $interval = _$interval_;
     ezSpinnerService = _ezSpinnerService_;
     ezSpinnerInterceptor = _ezSpinnerInterceptor_;
     ezSpinnerConfig = _ezSpinnerConfig_;
@@ -39,25 +39,25 @@ describe('ezSpinnerSpec', function() {
 
     ezSpinnerInterceptor.request(config);
 
-    $timeout.flush(); // flush init timeout
+    $interval.flush(350); // flush init interval
     assert.isFalse(ezSpinnerService.hidden);
 
-    $timeout.flush(); // flush max timeout
+    $interval.flush(15050); // flush max interval
     assert.isTrue(ezSpinnerService.hidden);
 
     ezSpinnerInterceptor.request(config);
-    $timeout.flush(); // flush init timeout
+    $interval.flush(350); // flush init interval
     ezSpinnerInterceptor.request(config);
-    $timeout.flush(); // flush init timeout
+    $interval.flush(350); // flush init interval
     ezSpinnerInterceptor.response({config: config});
     assert.isFalse(ezSpinnerService.hidden);
     ezSpinnerInterceptor.response({config: config});
     assert.isTrue(ezSpinnerService.hidden);
 
     ezSpinnerInterceptor.request(config);
-    $timeout.flush(); // flush init timeout
+    $interval.flush(300); // flush init interval
     ezSpinnerInterceptor.request(config);
-    $timeout.flush(); // flush init timeout
+    $interval.flush(300); // flush init interval
     ezSpinnerInterceptor.responseError({config: config});
     assert.isFalse(ezSpinnerService.hidden);
     ezSpinnerInterceptor.responseError({config: config});
