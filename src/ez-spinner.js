@@ -6,7 +6,7 @@ angular.module('ez.spinner', [])
 
 .constant('ezSpinnerConfig', {
   ignorePathRegex: '', // Do not show a spinner on matching paths
-  initWait: 500,
+  initWait: 300,
   maxWait: 15000
 })
 
@@ -15,6 +15,7 @@ angular.module('ez.spinner', [])
     return {
       callback: null,
       hidden: true,
+      numLoadings: 0,
       show: function() {
         this.hidden = false;
 
@@ -24,6 +25,7 @@ angular.module('ez.spinner', [])
       },
       hide: function() {
         this.hidden = true;
+        this.numLoadings = 0;
 
         if (typeof this.callback === 'function') {
           this.callback(this.hidden);
@@ -34,44 +36,58 @@ angular.module('ez.spinner', [])
 })
 
 .service('ezSpinnerInterceptor', ['$q', '$timeout', 'ezSpinnerConfig', 'ezSpinnerService', function($q, $timeout, ezSpinnerConfig, ezSpinnerService) {
-  var numLoadings = 0,
-      t;
+  var t;
+
+  var cancelTimeout = function() {
+    if (t) {
+      $timeout.cancel(t);
+    }
+  };
+
+  var pathNotIgnored = function(path) {
+    return !(ezSpinnerConfig.ignorePathRegex && path.match(ezSpinnerConfig.ignorePathRegex));
+  };
 
   return {
     'request': function(config) {
-      numLoadings++;
+      cancelTimeout();
 
-      if (t) {
-        $timeout.cancel(t);
+      if (pathNotIgnored(config.url)) {
+        ezSpinnerService.numLoadings += 1;
+
+        t = $timeout(function() {
+          if (ezSpinnerService.numLoadings > 0) {
+            ezSpinnerService.show();
+          }
+
+          t = $timeout(function() { // prevent spinner from hanging
+            ezSpinnerService.hide();
+          }, ezSpinnerConfig.maxWait);
+        }, ezSpinnerConfig.initWait);
       }
-
-      t = $timeout(function() {
-
-        if (numLoadings && (!(ezSpinnerConfig.ignorePathRegex && config.url.match(ezSpinnerConfig.ignorePathRegex)))) {
-          ezSpinnerService.show();
-        }
-
-        t = $timeout(function() { // prevent spinner from hanging
-          numLoadings = 0;
-          ezSpinnerService.hide();
-        }, ezSpinnerConfig.maxWait);
-
-      }, ezSpinnerConfig.initWait);
 
       return config || $q.when(config);
     },
     'response': function(response) {
-      if ((--numLoadings) === 0) {
-        ezSpinnerService.hide();
-        $timeout.cancel(t);
+      if (pathNotIgnored(response.config.url)) {
+        ezSpinnerService.numLoadings -= 1;
+
+        if (ezSpinnerService.numLoadings < 1) {
+          ezSpinnerService.hide();
+          cancelTimeout();
+        }
       }
 
       return response || $q.when(response);
     },
     'responseError': function(response) {
-      if (!(--numLoadings)) {
-        ezSpinnerService.hide();
-        $timeout.cancel(t);
+      if (pathNotIgnored(response.config.url)) {
+        ezSpinnerService.numLoadings -= 1;
+
+        if (ezSpinnerService.numLoadings < 1) {
+          ezSpinnerService.hide();
+          cancelTimeout();
+        }
       }
 
       return $q.reject(response);

@@ -49,18 +49,18 @@ describe('ezSpinnerSpec', function() {
     $timeout.flush(); // flush init timeout
     ezSpinnerInterceptor.request(config);
     $timeout.flush(); // flush init timeout
-    ezSpinnerInterceptor.response({});
+    ezSpinnerInterceptor.response({config: config});
     assert.isFalse(ezSpinnerService.hidden);
-    ezSpinnerInterceptor.response({});
+    ezSpinnerInterceptor.response({config: config});
     assert.isTrue(ezSpinnerService.hidden);
 
     ezSpinnerInterceptor.request(config);
     $timeout.flush(); // flush init timeout
     ezSpinnerInterceptor.request(config);
     $timeout.flush(); // flush init timeout
-    ezSpinnerInterceptor.responseError({});
+    ezSpinnerInterceptor.responseError({config: config});
     assert.isFalse(ezSpinnerService.hidden);
-    ezSpinnerInterceptor.responseError({});
+    ezSpinnerInterceptor.responseError({config: config});
     assert.isTrue(ezSpinnerService.hidden);
   });
 
@@ -72,10 +72,6 @@ describe('ezSpinnerSpec', function() {
     ezSpinnerConfig.ignorePathRegex = '.*(ignore).*';
     ezSpinnerInterceptor.request(config);
 
-    $timeout.flush(); // flush init timeout
-    assert.isTrue(ezSpinnerService.hidden);
-
-    $timeout.flush(); // flush max timeout
     assert.isTrue(ezSpinnerService.hidden);
   });
 
