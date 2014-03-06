@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css" rel="stylesheet">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
+
+  <style>
+    .ez-spinner {
+      background: url("images/spinner1.gif") no-repeat scroll transparent;
+      background-position: center 20px;
+      background-color: #f5f5f5;
+      position: fixed;
+      border: solid 2px #ccc;
+      text-align: center;
+      top: 30%;
+      left: 50%;
+      margin-left: -50px;
+      width: 100px;
+      height: 100px;
+      z-index: 10000;
+    }
+    .ez-spinner  p {
+      padding-top: 60px;
+      color: #686b70;
+      bottom: 0;
+    }
+  </style>
+
+  <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.9/angular.js"></script>
+
+  <script src="src/ez-spinner.js"></script>
+
+  <script type="text/javascript">
+    angular.module('myApp', ['ez.spinner'])
+    .controller('myCtrl', ['$scope', 'ezSpinnerService', function($scope, ezSpinnerService)  {
+      $scope.show = function() {
+        ezSpinnerService.show();
+      };
+      $scope.hide = function() {
+        ezSpinnerService.hide();
+      };
+    }]);
+  </script>
+
+</head>
+
+<body ng-app="myApp">
+  <h1>ez-spinner Demo</h1>
+  <br>
+  <br>
+  <br>
+  <br>
+  <div ng-controller="myCtrl">
+    <a class="btn btn-large btn-primary" ng-click="show()">Show</a>
+    <a class="btn btn-large btn-warning" ng-click="hide()">Hide</a>
+  </div>
+  <ez-spinner><p>Hold up man</p></ez-spinner>
+</body>
+
+</html>

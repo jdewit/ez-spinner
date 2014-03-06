@@ -1,0 +1,13 @@
+{
+  "name": "ez-spinner",
+  "description": "ez-spinner",
+  "author": "Joris de Wit",
+  "license": "MIT",
+  "version": "0.0.1",
+  "dependencies": {
+    "angular": "latest"
+  },
+  "devDependencies": {
+    "jquery": "~2.1.0"
+  }
+}
