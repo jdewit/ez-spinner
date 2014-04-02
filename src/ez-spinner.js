@@ -99,13 +99,18 @@ angular.module('ez.spinner', [])
   return {
     restrict: 'EA',
     replace: true,
-    transclude: true,
-    template: '<div class="ez-spinner" ng-hide="hidden"><div ng-transclude></div></div>',
-    link: function(scope) {
-      scope.hidden = true;
+    template: '<div class="ez-spinner" ng-hide="hidden"></div>',
+    compile: function(element, attrs) {
+      if (attrs.text) {
+        element.append('<p>' + attrs.text + '</p>');
+      }
 
-      ezSpinnerService.callback = function(hidden) {
-        scope.hidden = hidden;
+      return function(scope) {
+        scope.hidden = true;
+
+        ezSpinnerService.callback = function(hidden) {
+          scope.hidden = hidden;
+        };
       };
     }
   };
